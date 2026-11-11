@@ -1,0 +1,149 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+void main() =>
+    runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Campus()));
+
+void openPage(BuildContext c, String t, String i) {
+  Navigator.push(
+    c,
+    MaterialPageRoute(
+      builder: (_) => DetailPage(title: t, info: i),
+    ),
+  );
+}
+
+class Campus extends StatefulWidget {
+  @override
+  State<Campus> createState() => _CampusState();
+}
+
+class _CampusState extends State<Campus> {
+  late Future<List> data;
+
+  @override
+  void initState() {
+    super.initState();
+    data = fetchData();
+  }
+
+  Future<List> fetchData() async {
+    var r = await http.get(Uri.parse('https://dummyjson.com/posts?limit=5'));
+    if (r.statusCode == 200) {
+      return jsonDecode(r.body)['posts'];
+    }
+    throw Exception('Failed to load data');
+  }
+
+  @override
+  Widget build(BuildContext c) => Scaffold(
+    appBar: AppBar(title: Text('Smart Campus'), backgroundColor: Colors.blue),
+    body: ListView(
+      padding: EdgeInsets.all(15),
+      children: [
+        Center(
+          child: Image.network(
+            'https://th.bing.com/th/id/OIP.6v45KsXMztzKYOiXS0W1TwAAAA?w=119&h=81&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3',
+            height: 90,
+            width: 100,
+          ),
+        ),
+        Center(
+          child: Text(
+            'Vishnu Institute of Technology',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        SizedBox(height: 20),
+        Text(
+          'Campus Facilities',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        ListTile(
+          leading: Icon(Icons.local_library),
+          title: Text('Library'),
+          onTap: () => openPage(
+            c,
+            'Library',
+            'Library provides books and study materials.',
+          ),
+        ),
+        ListTile(
+          leading: Icon(Icons.computer),
+          title: Text('Computer Labs'),
+          onTap: () => openPage(
+            c,
+            'Computer Labs',
+            'Labs provide systems for practical learning.',
+          ),
+        ),
+        ListTile(
+          leading: Icon(Icons.sports),
+          title: Text('Sports Ground'),
+          onTap: () => openPage(
+            c,
+            'Sports Ground',
+            'Students can participate in sports.',
+          ),
+        ),
+        ListTile(
+          leading: Icon(Icons.wifi),
+          title: Text('Wi-Fi Facility'),
+          onTap: () => openPage(
+            c,
+            'Wi-Fi Facility',
+            'Campus Wi-Fi provides internet access.',
+          ),
+        ),
+        Divider(),
+        Text(
+          'Contact Information',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        Text('Email: info@vishnu.edu.in'),
+        Text('Location: Bhimavaram'),
+        Divider(),
+        Text(
+          'Campus Announcements',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        FutureBuilder<List>(
+          future: data,
+          builder: (c, s) {
+            if (s.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (s.hasError) return Text('Error loading data');
+            return Column(
+              children: s.data!
+                  .map(
+                    (p) => ListTile(
+                      title: Text(p['title']),
+                      subtitle: Text(p['body']),
+                      trailing: Icon(Icons.arrow_forward),
+                      onTap: () => openPage(c, p['title'], p['body']),
+                    ),
+                  )
+                  .toList(),
+            );
+          },
+        ),
+      ],
+    ),
+  );
+}
+
+class DetailPage extends StatelessWidget {
+  final String title, info;
+  DetailPage({required this.title, required this.info});
+
+  @override
+  Widget build(BuildContext c) => Scaffold(
+    appBar: AppBar(title: Text(title), backgroundColor: Colors.blue),
+    body: Padding(
+      padding: EdgeInsets.all(20),
+      child: Text(info, style: TextStyle(fontSize: 18)),
+    ),
+  );
+}
