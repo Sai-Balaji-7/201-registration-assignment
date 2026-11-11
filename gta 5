@@ -1,0 +1,28 @@
+Flutter: Display College Logo Using URL
+
+Replace the existing school icon with an image from a URL.
+
+Existing code
+
+Center(
+  child: Icon(Icons.school, size: 80, color: Colors.blue),
+),
+
+Replace with
+
+Center(
+  child: Image.network(
+    'PASTE_LOGO_URL_HERE',
+    height: 100,
+    width: 100,
+  ),
+),
+
+Remember
+
+- "Icon()" → displays a built-in Flutter icon.
+- "Image.network()" → displays an image from a URL.
+- "height" and "width" → control the image size.
+- Replace "PASTE_LOGO_URL_HERE" with the actual image URL.
+
+Note: The URL should point directly to an image, such as a ".png" or ".jpg" file, and internet access is required.
