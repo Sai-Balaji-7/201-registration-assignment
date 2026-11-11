@@ -1,0 +1,59 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: CampusPage(),
+  ));
+}
+
+class CampusPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Smart Campus'),
+        backgroundColor: Colors.blue,
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Icon(Icons.school, size: 80, color: Colors.blue),
+            ),
+            Center(
+              child: Text('Vishnu Institute of Technology',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
+            SizedBox(height: 25),
+            Text('Campus Facilities',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ListTile(
+              leading: Icon(Icons.local_library),
+              title: Text('Library'),
+            ),
+            ListTile(
+              leading: Icon(Icons.computer),
+              title: Text('Computer Labs'),
+            ),
+            ListTile(
+              leading: Icon(Icons.sports),
+              title: Text('Sports Ground'),
+            ),
+            ListTile(
+              leading: Icon(Icons.wifi),
+              title: Text('Wi-Fi Facility'),
+            ),
+            Divider(),
+            Text('Contact Information',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text('Email: info@vishnu.edu.in'),
+            Text('Location: Bhimavaram'),
+          ],
+        ),
+      ),
+    );
+  }
+}
