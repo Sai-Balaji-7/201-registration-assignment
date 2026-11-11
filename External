@@ -1,0 +1,103 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+void main() => runApp(MaterialApp(
+    debugShowCheckedModeBanner: false, home: Campus()));
+
+void openPage(BuildContext c, String title, String info) {
+  Navigator.push(c, MaterialPageRoute(
+      builder: (_) => DetailPage(title: title, info: info)));
+}
+
+class Campus extends StatefulWidget {
+  @override
+  State<Campus> createState() => _CampusState();
+}
+
+class _CampusState extends State<Campus> {
+  late Future<List> data;
+
+  @override
+  void initState() {
+    super.initState();
+    data = fetchData();
+  }
+
+  Future<List> fetchData() async {
+    var res = await http.get(
+        Uri.parse('https://dummyjson.com/posts?limit=5'));
+    if (res.statusCode == 200) {
+      return jsonDecode(res.body)['posts'];
+    }
+    throw Exception('Failed to load data');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Smart Campus'),
+          backgroundColor: Colors.blue),
+      body: ListView(padding: EdgeInsets.all(15), children: [
+        Icon(Icons.school, size: 80, color: Colors.blue),
+        Center(child: Text('Vishnu Institute of Technology',
+            style: TextStyle(fontSize: 20,
+                fontWeight: FontWeight.bold))),
+        SizedBox(height: 20),
+        Text('Campus Facilities',
+            style: TextStyle(fontSize: 20,
+                fontWeight: FontWeight.bold)),
+        ListTile(leading: Icon(Icons.book), title: Text('Library'),
+            onTap: () => openPage(context, 'Library',
+                'Library provides books and study materials.')),
+        ListTile(leading: Icon(Icons.computer), title: Text('Computer Labs'),
+            onTap: () => openPage(context, 'Computer Labs',
+                'Labs provide systems for practical learning.')),
+        ListTile(leading: Icon(Icons.sports), title: Text('Sports Ground'),
+            onTap: () => openPage(context, 'Sports Ground',
+                'Students can participate in sports.')),
+        ListTile(leading: Icon(Icons.wifi), title: Text('Wi-Fi Facility'),
+            onTap: () => openPage(context, 'Wi-Fi',
+                'Internet access is available on campus.')),
+        Divider(),
+        Text('Contact Information',
+            style: TextStyle(fontSize: 20,
+                fontWeight: FontWeight.bold)),
+        Text('Email: info@vishnu.edu.in'),
+        Text('Location: Bhimavaram'),
+        Divider(),
+        Text('Campus Announcements (REST API)',
+            style: TextStyle(fontSize: 20,
+                fontWeight: FontWeight.bold)),
+        FutureBuilder<List>(
+          future: data,
+          builder: (c, s) {
+            if (s.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (s.hasError) return Text('Error loading data');
+            return Column(children: s.data!.map((item) => ListTile(
+              title: Text(item['title']),
+              subtitle: Text(item['body']),
+              trailing: Icon(Icons.arrow_forward),
+              onTap: () => openPage(context, item['title'],
+                  item['body']),
+            )).toList());
+          },
+        ),
+      ]),
+    );
+  }
+}
+
+class DetailPage extends StatelessWidget {
+  final String title, info;
+  DetailPage({required this.title, required this.info});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(title), backgroundColor: Colors.blue),
+    body: Padding(padding: EdgeInsets.all(20),
+        child: Text(info, style: TextStyle(fontSize: 18))),
+  );
+}
